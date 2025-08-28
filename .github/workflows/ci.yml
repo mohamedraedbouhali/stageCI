@@ -1,28 +1,32 @@
-# Workflow name
-name: Python CI
+# The name of the workflow that will appear in the GitHub Actions tab
+name: Python CI Pipeline
 
-# Trigger the workflow on push and pull request events
+# The events that trigger this workflow
 on:
   push:
+    # Run the workflow on every push to the main branch
     branches: [ "main" ]
   pull_request:
+    # Run the workflow on every pull request to the main branch
     branches: [ "main" ]
 
-# A single job named 'test'
+# A collection of jobs that will run as part of this workflow
 jobs:
-  test:
-    # Use the latest Ubuntu runner
+  build_and_test:
+    # The runner environment where the job will execute
     runs-on: ubuntu-latest
-
-    # Strategy to test with different Python versions (optional but good practice)
+    
+    # You can remove the matrix strategy for now to simplify troubleshooting
+    # Or keep it if you feel confident it's not the cause of the problem
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
 
-    # Steps to run within the 'test' job
+    # The steps within this job
     steps:
     # Step 1: Check out the repository code
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
     # Step 2: Set up a specific Python version
     - name: Set up Python ${{ matrix.python-version }}
@@ -36,7 +40,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # Step 4: Run the automated tests with pytest
-    - name: Run tests with pytest
+    # Step 4: Install the project in editable mode
+    # THIS IS THE NEW STEP YOU NEED TO ADD
+    - name: Install the project
       run: |
-        pytest
+        pip install -e .
+
+    # Step 5: Run the automated tests with pytest
+    - name: Run tests with pytest
+      run: pytest
