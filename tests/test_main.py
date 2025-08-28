@@ -1,5 +1,4 @@
-from my_app.main import greet, add_numbers
-
+from CI import greet, add_numbers
 def test_greet():
     """
     Test the greet function.
